@@ -41,3 +41,7 @@ class SparseTensor:
         tensor.coord_maps = self.coord_maps
         tensor.kernel_maps = self.kernel_maps
         return tensor
+
+    @property
+    def shape(self):
+        return self.F.shape
