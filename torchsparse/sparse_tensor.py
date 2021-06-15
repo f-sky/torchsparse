@@ -45,3 +45,11 @@ class SparseTensor:
     @property
     def shape(self):
         return self.F.shape
+
+    @property
+    def coords(self):
+        if isinstance(self.C, torch.Tensor):
+            C = self.C.float()
+        else:
+            C = self.C
+        return C.float() * self.s
