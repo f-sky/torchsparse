@@ -53,3 +53,7 @@ class SparseTensor:
         else:
             C = self.C
         return C.float() * self.s
+
+    @property
+    def device(self):
+        return self.F.device

@@ -1,3 +1,4 @@
+import torch.nn.functional as F
 import torch
 
 __all__ = ['PointTensor']
@@ -39,3 +40,7 @@ class PointTensor:
                              self.weights)
         tensor.additional_features = self.additional_features
         return tensor
+
+    @property
+    def device(self):
+        return self.F.device
