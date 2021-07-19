@@ -2,6 +2,8 @@ import torch
 
 __all__ = ['SparseTensor']
 
+from torchsparse.utils.base_utils import clone, to_device
+
 
 class SparseTensor:
     def __init__(self, feats, coords, stride=1):
@@ -15,13 +17,6 @@ class SparseTensor:
         if self.s not in self.coord_maps:
             self.coord_maps[self.s] = self.C
 
-    def cuda(self):
-        assert type(self.F) == torch.Tensor
-        assert type(self.C) == torch.Tensor
-        self.F = self.F.cuda()
-        self.C = self.C.cuda()
-        return self
-
     def detach(self):
         assert type(self.F) == torch.Tensor
         assert type(self.C) == torch.Tensor
@@ -30,11 +25,21 @@ class SparseTensor:
         return self
 
     def to(self, device, non_blocking=True):
-        assert type(self.F) == torch.Tensor
-        assert type(self.C) == torch.Tensor
-        self.F = self.F.to(device, non_blocking=non_blocking)
-        self.C = self.C.to(device, non_blocking=non_blocking)
-        return self
+        st = self.clone()
+        assert type(st.F) == torch.Tensor
+        assert type(st.C) == torch.Tensor
+        st.F = to_device(st.F, device)
+        st.C = to_device(st.C, device)
+        st.s = to_device(st.s, device)
+        st.kernel_maps = to_device(st.kernel_maps, device)
+        st.coord_maps = to_device(st.coord_maps, device)
+        return st
+
+    def cuda(self, non_blocking=True):
+        return self.to(device='cuda', non_blocking=non_blocking)
+
+    def cpu(self, non_blocking=True):
+        return self.to(device='cpu', non_blocking=non_blocking)
 
     def __add__(self, other):
         tensor = SparseTensor(self.F + other.F, self.C, self.s)
@@ -52,8 +57,19 @@ class SparseTensor:
             C = self.C.float()
         else:
             C = self.C
-        return C.float() * self.s
+        return C * self.s
 
     @property
     def device(self):
         return self.F.device
+
+    def clone(self):
+        F = clone(self.F)
+        C = clone(self.C)
+        s = clone(self.s)
+        coord_maps = clone(self.coord_maps)
+        kernel_maps = clone(self.kernel_maps)
+        st = SparseTensor(F, C, s)
+        st.coord_maps = coord_maps
+        st.kernel_maps = kernel_maps
+        return st
