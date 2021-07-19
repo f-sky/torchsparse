@@ -2,7 +2,7 @@ import torch
 
 __all__ = ['PointTensor']
 
-from torchsparse.utils.base_utils import clone, to_device
+from .utils.base_utils import clone, to_device
 
 
 class PointTensor:

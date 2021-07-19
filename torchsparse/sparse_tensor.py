@@ -2,7 +2,7 @@ import torch
 
 __all__ = ['SparseTensor']
 
-from torchsparse.utils.base_utils import clone, to_device
+from .utils.base_utils import clone, to_device
 
 
 class SparseTensor:
