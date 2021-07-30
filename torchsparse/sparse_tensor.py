@@ -1,3 +1,4 @@
+import torch.nn.functional as F
 import torch
 
 __all__ = ['SparseTensor']
@@ -73,3 +74,7 @@ class SparseTensor:
         st.coord_maps = coord_maps
         st.kernel_maps = kernel_maps
         return st
+
+    @property
+    def is_cuda(self):
+        return self.F.is_cuda
