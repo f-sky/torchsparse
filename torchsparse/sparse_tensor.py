@@ -78,3 +78,6 @@ class SparseTensor:
     @property
     def is_cuda(self):
         return self.F.is_cuda
+
+    def dim(self):
+        return 2
