@@ -65,6 +65,10 @@ class PointTensor:
     def device(self):
         return self.F.device
 
+    @property
+    def is_cuda(self):
+        return self.F.is_cuda
+
     def clone(self):
         F = clone(self.F)
         C = clone(self.C)
