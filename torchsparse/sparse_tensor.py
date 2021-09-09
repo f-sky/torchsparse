@@ -3,7 +3,7 @@ import torch
 
 __all__ = ['SparseTensor']
 
-from .base_utils import clone, to_device
+from .base_utils import clone, to_device, to_cuda, to_cpu
 
 
 class SparseTensor:
@@ -37,10 +37,26 @@ class SparseTensor:
         return st
 
     def cuda(self, non_blocking=True):
-        return self.to(device='cuda', non_blocking=non_blocking)
+        st = self.clone()
+        assert type(st.F) == torch.Tensor
+        assert type(st.C) == torch.Tensor
+        st.F = to_cuda(st.F)
+        st.C = to_cuda(st.C)
+        st.s = to_cuda(st.s)
+        st.kernel_maps = to_cuda(st.kernel_maps)
+        st.coord_maps = to_cuda(st.coord_maps)
+        return st
 
     def cpu(self, non_blocking=True):
-        return self.to(device='cpu', non_blocking=non_blocking)
+        st = self.clone()
+        assert type(st.F) == torch.Tensor
+        assert type(st.C) == torch.Tensor
+        st.F = to_cpu(st.F)
+        st.C = to_cpu(st.C)
+        st.s = to_cpu(st.s)
+        st.kernel_maps = to_cpu(st.kernel_maps)
+        st.coord_maps = to_cpu(st.coord_maps)
+        return st
 
     def __add__(self, other):
         tensor = SparseTensor(self.F + other.F, self.C, self.s)
@@ -81,3 +97,12 @@ class SparseTensor:
 
     def dim(self):
         return 2
+
+    def contiguous(self):
+        return self.clone()
+
+    def numel(self):
+        return self.F.numel()
+
+    def size(self, dim):
+        return self.F.size(dim)

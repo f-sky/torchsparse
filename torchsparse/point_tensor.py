@@ -2,7 +2,7 @@ import torch
 
 __all__ = ['PointTensor']
 
-from .base_utils import clone, to_device
+from .base_utils import clone, to_device, to_cpu, to_cuda
 
 
 class PointTensor:
@@ -34,10 +34,26 @@ class PointTensor:
         return pt
 
     def cuda(self, non_blocking=True):
-        return self.to(device='cuda', non_blocking=non_blocking)
+        pt = self.clone()
+        assert type(pt.F) == torch.Tensor
+        assert type(pt.C) == torch.Tensor
+        pt.F = to_cuda(pt.F)
+        pt.C = to_cuda(pt.C)
+        pt.idx_query = to_cuda(pt.idx_query)
+        pt.weights = to_cuda(pt.weights)
+        pt.additional_features = to_cuda(pt.additional_features)
+        return pt
 
     def cpu(self):
-        return self.to('cpu')
+        pt = self.clone()
+        assert type(pt.F) == torch.Tensor
+        assert type(pt.C) == torch.Tensor
+        pt.F = to_cpu(pt.F)
+        pt.C = to_cpu(pt.C)
+        pt.idx_query = to_cpu(pt.idx_query)
+        pt.weights = to_cpu(pt.weights)
+        pt.additional_features = to_cpu(pt.additional_features)
+        return pt
 
     def __add__(self, other):
         tensor = PointTensor(self.F + other.F, self.C, self.idx_query,
